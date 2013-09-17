@@ -27,13 +27,14 @@ function main() {
 	moveCharacter(randomCharacter);
     spawnGold();
 	spawnMonster();
+	spawnHealth();
 }
 
 function render(randomCharacter) {
 	process.stdout.write('\u001B[2J\u001B[0;0f');
 	
-	if (randomCharacter.health === 0) {
-	    process.stdout.write("Aw snap, you died! Your stats:");
+	if (randomCharacter.health <= 0) {
+	    process.stdout.write("Aw snap, you died after " + time + " seconds in the maze! Your stats:");
 		process.stdout.write("\n");
 		process.stdout.write("\n");
 	} else {
@@ -53,6 +54,8 @@ function render(randomCharacter) {
 							process.stdout.write("\033[33m☻\033[0m");	
 						} else if (level[x][y] === 3) {
 							process.stdout.write("\033[31m☠\033[0m");
+						} else if (level[x][y] === 4) {
+							process.stdout.write("\033[32m♥\033[0m");
 						} else {
 							process.stdout.write('☐');	
 						}
@@ -83,8 +86,11 @@ function moveCharacter(randomCharacter) {
 				if ((!(nextX > randomCharacter.x + 1 || nextX < randomCharacter.x - 1) && !(nextY > randomCharacter.y + 1 || nextY < randomCharacter.y - 1))) {
 					randomCharacter.x = nextX;
 					randomCharacter.y = nextY;
+					
 					pickGold(nextX, nextY);
 					fightMonster(nextX, nextY);
+					pickHealth(nextX, nextY);
+					
 					isWalkable = true;	
 				}
 			}
@@ -102,8 +108,8 @@ function spawnGold() {
 			posX = Math.floor((Math.random()*maxX)+1);
 			posY = Math.floor((Math.random()*maxY)+1);
 		
-			if (level[nextX][nextY] > 0) {
-				level[nextX][nextY] = 2;
+			if (level[posX][posY] > 0) {
+				level[posX][posY] = 2;
 				isWalkable = true;
 			}
 		}
@@ -111,7 +117,7 @@ function spawnGold() {
 }
 
 function spawnMonster() {
-	if (time % 20 === 0) {
+	if (time % 25 === 0) {
 		var maxY = level[0].length - 1;
 		var maxX = level.length - 1;
 		var isWalkable = false;
@@ -120,8 +126,26 @@ function spawnMonster() {
 			posX = Math.floor((Math.random()*maxX)+1);
 			posY = Math.floor((Math.random()*maxY)+1);
 		
-			if (level[nextX][nextY] > 0) {
-				level[nextX][nextY] = 3;
+			if (level[posX][posY] > 0) {
+				level[posX][posY] = 3;
+				isWalkable = true;
+			}
+		}
+	}
+}
+
+function spawnHealth() {
+	if (time % 60 === 0) {
+		var maxY = level[0].length - 1;
+		var maxX = level.length - 1;
+		var isWalkable = false;
+		
+		while (isWalkable !== true) {
+			posX = Math.floor((Math.random()*maxX)+1);
+			posY = Math.floor((Math.random()*maxY)+1);
+		
+			if (level[posX][posY] > 0) {
+				level[posX][posY] = 4;
 				isWalkable = true;
 			}
 		}
@@ -137,9 +161,20 @@ function pickGold(characterPositionX, characterPositionY) {
 
 function fightMonster(characterPositionX, characterPositionY) {
 	if (level[characterPositionX][characterPositionY] === 3) {
-		randomCharacter.health -= Math.floor((Math.random()*10)+1);;
+		randomCharacter.health -= Math.floor((Math.random()*20)+1);;
 		level[characterPositionX][characterPositionY] = 1;
 		randomCharacter.monsterKilled++;
+	}
+}
+
+function pickHealth(characterPositionX, characterPositionY) {
+	if (level[characterPositionX][characterPositionY] === 4) {
+		if (randomCharacter.health + 10 > 100) {
+			randomCharacter.health = 100;
+		} else {
+			randomCharacter.health += 10;
+		}
+		level[characterPositionX][characterPositionY] = 1;
 	}
 }
 
