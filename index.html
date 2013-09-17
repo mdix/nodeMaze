@@ -42,15 +42,16 @@ var character = function(x, y) {
 }
 
 var ctx = document.getElementById("canvas").getContext("2d");
-
-
 var randomCharacter = new character(4,4);
 var time = 0;
+window.onkeydown = function(keyObj) {
+	var direction = keyObj.keyIdentifier.toLowerCase();
+	moveCharacter(randomCharacter, direction);
+}
 
 function main() {
 	time += 0.5;
 	render(randomCharacter);
-	moveCharacter(randomCharacter);
 }
 
 function render(randomCharacter) {
@@ -72,31 +73,49 @@ function render(randomCharacter) {
 	}
 }
 
-function moveCharacter(randomCharacter) {
+function moveCharacter(randomCharacter, direction) {
 	var maxY = level[0].length - 1;
 	var maxX = level.length - 1;
-	var isWalkable = false;
+	var currentY = randomCharacter.y;
+	var currentX = randomCharacter.x;
 	
-	while (isWalkable !== true) {
-		nextX = Math.floor((Math.random()*maxX)+1);
-		nextY = Math.floor((Math.random()*maxY)+1);
-		
-		if (level[nextX][nextY] === 0) {
-			if (!(randomCharacter.x === nextX && randomCharacter.y === nextY)) {
-				if ((!(nextX > randomCharacter.x + 1 || nextX < randomCharacter.x - 1) && !(nextY > randomCharacter.y + 1 || nextY < randomCharacter.y - 1))) {
-					randomCharacter.x = nextX;
-					randomCharacter.y = nextY;
-					
-					isWalkable = true;	
-				}
+	switch (direction) {
+		case 'up':
+			if (level[currentX - 1][currentY] === 0) {
+				randomCharacter.x--;
 			}
-		} 
+			break;
+		case 'down':
+			if (level[currentX + 1][currentY] === 0) {
+				randomCharacter.x++;
+			}
+			break;
+		case 'left':
+			if (level[currentX][currentY - 1] === 0) {
+				randomCharacter.y--;
+			}
+			break;
+		case 'right':
+			if (level[currentX][currentY + 1] === 0) {
+				randomCharacter.y++;
+			}
+			break;
 	}
 }
 
-window.setInterval(function() {
-	main();
-}, 500)
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
+(function animloop(){
+  requestAnimFrame(animloop);
+  main();
+})();
 </script>
 </body>
 </html>
