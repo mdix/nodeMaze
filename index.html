@@ -7,33 +7,35 @@
 </head>
 <body>
 	<img id="parquet" src="tiles/parquet.jpg">
+	<img id="character" src="tiles/character.png">
+	<img id="wall" src="tiles/wall.png">
 <canvas id="canvas" width="640" height="480" style="position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;"></canvas>
 <script type="text/javascript">	
 var level = [
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-var tiles = [document.getElementById("parquet")]
+var tiles = [document.getElementById("parquet"), document.getElementById("wall")]
 var tileSize = 32;
 
 var character = function(x, y) {
 	this.x = x;
 	this.y = y;
-	this.symbol = "\033[34m♖\033[0m";
+	this.tile = document.getElementById("character");
 	this.gold = 0;
 	this.health = 100;
 	this.monsterKilled = 0;
@@ -48,24 +50,53 @@ var time = 0;
 function main() {
 	time += 0.5;
 	render(randomCharacter);
+	moveCharacter(randomCharacter);
 }
 
 function render(randomCharacter) {
 	for (var x = 0; x < level.length; x++) {
 		for (var y = 0; y < level[x].length; y++) {
 			if (level[x][y] === 0) {
-				// parquet
-				ctx.drawImage(tiles[0], y * 32, x * 32);
+				if (x === randomCharacter.x && y === randomCharacter.y) {
+					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);	
+					ctx.drawImage(randomCharacter.tile, y * tileSize, x * tileSize);
+				} else {
+					// parquet
+					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);	
+				}
 			} else {
 				// wall
+				ctx.drawImage(tiles[1], y * tileSize, x * tileSize);	
 			}
 		}
 	}
 }
 
-window.setTimeout(function() {
+function moveCharacter(randomCharacter) {
+	var maxY = level[0].length - 1;
+	var maxX = level.length - 1;
+	var isWalkable = false;
+	
+	while (isWalkable !== true) {
+		nextX = Math.floor((Math.random()*maxX)+1);
+		nextY = Math.floor((Math.random()*maxY)+1);
+		
+		if (level[nextX][nextY] === 0) {
+			if (!(randomCharacter.x === nextX && randomCharacter.y === nextY)) {
+				if ((!(nextX > randomCharacter.x + 1 || nextX < randomCharacter.x - 1) && !(nextY > randomCharacter.y + 1 || nextY < randomCharacter.y - 1))) {
+					randomCharacter.x = nextX;
+					randomCharacter.y = nextY;
+					
+					isWalkable = true;	
+				}
+			}
+		} 
+	}
+}
+
+window.setInterval(function() {
 	main();
-}, 1000);
+}, 500)
 </script>
 </body>
 </html>
