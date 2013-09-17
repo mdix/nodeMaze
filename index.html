@@ -11,6 +11,7 @@
 	<img id="character_left" src="tiles/character_left.png">
 	<img id="character_right" src="tiles/character_right.png">
 	<img id="wall" src="tiles/wall.png">
+	<img id="coffee_maker" src="tiles/coffee_maker.png">
 <canvas id="canvas" width="640" height="480" style="position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;"></canvas>
 <script type="text/javascript">	
 var level = [
@@ -60,23 +61,16 @@ function main() {
 function render(randomCharacter) {
 	for (var x = 0; x < level.length; x++) {
 		for (var y = 0; y < level[x].length; y++) {
-			if (level[x][y] === 0) {
-				if (x === randomCharacter.x && y === randomCharacter.y) {
-					// parquet and character (left and right view)
-					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);
-					if (randomCharacter.moves === 'right') {
-						ctx.drawImage(randomCharacter.tile[1], y * tileSize, x * tileSize);
-					} else {
-						ctx.drawImage(randomCharacter.tile[0], y * tileSize, x * tileSize);
-					}
+			// parquet / walls
+			ctx.drawImage(tiles[level[x][y]], y * tileSize, x * tileSize);	
+			if (x === randomCharacter.x && y === randomCharacter.y) {
+				// character (left and right view)
+				if (randomCharacter.moves === 'right') {
+					ctx.drawImage(randomCharacter.tile[1], y * tileSize, x * tileSize);
 				} else {
-					// parquet
-					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);	
+					ctx.drawImage(randomCharacter.tile[0], y * tileSize, x * tileSize);
 				}
-			} else {
-				// wall
-				ctx.drawImage(tiles[1], y * tileSize, x * tileSize);	
-			}
+			}	
 		}
 	}
 }
