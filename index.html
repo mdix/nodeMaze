@@ -3,11 +3,13 @@
 <head>
 	<style type="text/css">
 		img {display: none;}
+		html, body {margin: 0; padding: 0;}
 	</style>
 </head>
 <body>
 	<img id="parquet" src="tiles/parquet.jpg">
-	<img id="character" src="tiles/character.png">
+	<img id="character_left" src="tiles/character_left.png">
+	<img id="character_right" src="tiles/character_right.png">
 	<img id="wall" src="tiles/wall.png">
 <canvas id="canvas" width="640" height="480" style="position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;"></canvas>
 <script type="text/javascript">	
@@ -35,10 +37,8 @@ var tileSize = 32;
 var character = function(x, y) {
 	this.x = x;
 	this.y = y;
-	this.tile = document.getElementById("character");
-	this.gold = 0;
-	this.health = 100;
-	this.monsterKilled = 0;
+	this.tile = [document.getElementById("character_left"), document.getElementById("character_right")];
+	this.moves = 'right';
 }
 
 var ctx = document.getElementById("canvas").getContext("2d");
@@ -47,6 +47,9 @@ var time = 0;
 window.onkeydown = function(keyObj) {
 	var direction = keyObj.keyIdentifier.toLowerCase();
 	moveCharacter(randomCharacter, direction);
+	if (direction === 'up' || direction === 'down' || direction === 'left' || direction === 'right') {
+		return false;
+	}
 }
 
 function main() {
@@ -59,8 +62,13 @@ function render(randomCharacter) {
 		for (var y = 0; y < level[x].length; y++) {
 			if (level[x][y] === 0) {
 				if (x === randomCharacter.x && y === randomCharacter.y) {
-					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);	
-					ctx.drawImage(randomCharacter.tile, y * tileSize, x * tileSize);
+					// parquet and character
+					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);
+					if (randomCharacter.moves === 'right') {
+						ctx.drawImage(randomCharacter.tile[1], y * tileSize, x * tileSize);
+					} else {
+						ctx.drawImage(randomCharacter.tile[0], y * tileSize, x * tileSize);
+					}
 				} else {
 					// parquet
 					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);	
@@ -93,11 +101,13 @@ function moveCharacter(randomCharacter, direction) {
 		case 'left':
 			if (level[currentX][currentY - 1] === 0) {
 				randomCharacter.y--;
+				randomCharacter.moves = 'left';
 			}
 			break;
 		case 'right':
 			if (level[currentX][currentY + 1] === 0) {
 				randomCharacter.y++;
+				randomCharacter.moves = 'right';
 			}
 			break;
 	}
