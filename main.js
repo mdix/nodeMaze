@@ -22,12 +22,18 @@ var randomCharacter = new character(4,4);
 var time = 0;
 
 function main() {
-	time += 1;
+	if (randomCharacter.health >= 0) {
+		time += 0.5;
+	}
+	
 	render(randomCharacter);
-	moveCharacter(randomCharacter);
-    spawnGold();
-	spawnMonster();
-	spawnHealth();
+
+	if (randomCharacter.health >= 0) {
+		moveCharacter(randomCharacter);
+    	spawnGold();
+		spawnMonster();
+		spawnHealth();
+	}
 }
 
 function render(randomCharacter) {
@@ -67,7 +73,8 @@ function render(randomCharacter) {
 	}
     process.stdout.write("gold: " + randomCharacter.gold);
 	process.stdout.write("\n");
-    process.stdout.write("health: " + randomCharacter.health);
+	var health = randomCharacter.health < 0 ? 0 : randomCharacter.health;
+    process.stdout.write("health: " + health);
 	process.stdout.write("\n");
     process.stdout.write("monster killed: " + randomCharacter.monsterKilled);
 }
@@ -99,7 +106,7 @@ function moveCharacter(randomCharacter) {
 }
 
 function spawnGold() {
-	if (time % 10 === 0) {
+	if (time % 5 === 0) {
 		var maxY = level[0].length - 1;
 		var maxX = level.length - 1;
 		var isWalkable = false;
@@ -117,7 +124,7 @@ function spawnGold() {
 }
 
 function spawnMonster() {
-	if (time % 25 === 0) {
+	if (time % 10 === 0) {
 		var maxY = level[0].length - 1;
 		var maxX = level.length - 1;
 		var isWalkable = false;
@@ -135,7 +142,7 @@ function spawnMonster() {
 }
 
 function spawnHealth() {
-	if (time % 60 === 0) {
+	if (time % 30 === 0) {
 		var maxY = level[0].length - 1;
 		var maxX = level.length - 1;
 		var isWalkable = false;
