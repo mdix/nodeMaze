@@ -4,6 +4,7 @@
 	<style type="text/css">
 		img {display: none;}
 		html, body {margin: 0; padding: 0;}
+		canvas {position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;}
 	</style>
 </head>
 <body>
@@ -12,11 +13,13 @@
 	<img id="character_right" src="tiles/character_right.png">
 	<img id="wall" src="tiles/wall.png">
 	<img id="coffee_maker" src="tiles/coffee_maker.png">
-<canvas id="canvas" width="640" height="480" style="position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;"></canvas>
+	<span>Movement: up, down, left, right</span><br />
+	<span>Interaction: spacebar (go get a coffee)</span>
+<canvas id="canvas" width="640" height="480"></canvas>
 <script type="text/javascript">	
 var level = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,1],
 	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -32,7 +35,7 @@ var level = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-var tiles = [document.getElementById("parquet"), document.getElementById("wall")]
+var tiles = [document.getElementById("parquet"), document.getElementById("wall"), document.getElementById("coffee_maker")]
 var tileSize = 32;
 var ctx = document.getElementById("canvas").getContext("2d");
 
@@ -49,6 +52,10 @@ window.onkeydown = function(keyObj) {
 	var direction = keyObj.keyIdentifier.toLowerCase();
 	moveCharacter(randomCharacter, direction);
 	
+	if (direction === 'u+0020') {
+		interact(randomCharacter, direction);
+	}
+	
 	if (direction === 'up' || direction === 'down' || direction === 'left' || direction === 'right') {
 		return false;
 	}
@@ -62,7 +69,10 @@ function render(randomCharacter) {
 	for (var x = 0; x < level.length; x++) {
 		for (var y = 0; y < level[x].length; y++) {
 			// parquet / walls
-			ctx.drawImage(tiles[level[x][y]], y * tileSize, x * tileSize);	
+			if (level[x][y] === 2) {
+				ctx.drawImage(tiles[0], y * tileSize, x * tileSize);				
+			}
+			ctx.drawImage(tiles[level[x][y]], y * tileSize, x * tileSize);
 			if (x === randomCharacter.x && y === randomCharacter.y) {
 				// character (left and right view)
 				if (randomCharacter.moves === 'right') {
@@ -70,7 +80,7 @@ function render(randomCharacter) {
 				} else {
 					ctx.drawImage(randomCharacter.tile[0], y * tileSize, x * tileSize);
 				}
-			}	
+			}
 		}
 	}
 }
@@ -99,6 +109,18 @@ function moveCharacter(randomCharacter, direction) {
 				randomCharacter.y++;
 			}
 			break;
+	}
+}
+
+function interact(randomCharacter) {
+	if (randomCharacter.moves === 'left') {
+		if (level[randomCharacter.x][randomCharacter.y - 1] === 2) {
+			alert('brewing some coffee');
+		}
+	} else {
+		if (level[randomCharacter.x][randomCharacter.y + 1] === 2) {
+			alert('brewing some coffee');
+		}		
 	}
 }
 
