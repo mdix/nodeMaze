@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+	<style type="text/css">
+		img {display: none;}
+	</style>
+</head>
+<body>
+	<img id="parquet" src="tiles/parquet.jpg">
+<canvas id="canvas" width="640" height="480" style="position: absolute; top: 50%; left: 50%; margin-left: -320px; margin-top: -240px; background-color: silver;"></canvas>
+<script type="text/javascript">	
+var level = [
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+];
+
+var tiles = [document.getElementById("parquet")]
+var tileSize = 32;
+
+var character = function(x, y) {
+	this.x = x;
+	this.y = y;
+	this.symbol = "\033[34m♖\033[0m";
+	this.gold = 0;
+	this.health = 100;
+	this.monsterKilled = 0;
+}
+
+var ctx = document.getElementById("canvas").getContext("2d");
+
+
+var randomCharacter = new character(4,4);
+var time = 0;
+
+function main() {
+	time += 0.5;
+	render(randomCharacter);
+}
+
+function render(randomCharacter) {
+	for (var x = 0; x < level.length; x++) {
+		for (var y = 0; y < level[x].length; y++) {
+			if (level[x][y] === 0) {
+				// parquet
+				ctx.drawImage(tiles[0], y * 32, x * 32);
+			} else {
+				// wall
+			}
+		}
+	}
+}
+
+window.setTimeout(function() {
+	main();
+}, 1000);
+</script>
+</body>
+</html>
