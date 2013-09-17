@@ -33,6 +33,8 @@ var level = [
 
 var tiles = [document.getElementById("parquet"), document.getElementById("wall")]
 var tileSize = 32;
+var ctx = document.getElementById("canvas").getContext("2d");
+var randomCharacter = new character(4,4);
 
 var character = function(x, y) {
 	this.x = x;
@@ -41,19 +43,16 @@ var character = function(x, y) {
 	this.moves = 'right';
 }
 
-var ctx = document.getElementById("canvas").getContext("2d");
-var randomCharacter = new character(4,4);
-var time = 0;
 window.onkeydown = function(keyObj) {
 	var direction = keyObj.keyIdentifier.toLowerCase();
 	moveCharacter(randomCharacter, direction);
+	
 	if (direction === 'up' || direction === 'down' || direction === 'left' || direction === 'right') {
 		return false;
 	}
 }
 
 function main() {
-	time += 0.5;
 	render(randomCharacter);
 }
 
@@ -62,7 +61,7 @@ function render(randomCharacter) {
 		for (var y = 0; y < level[x].length; y++) {
 			if (level[x][y] === 0) {
 				if (x === randomCharacter.x && y === randomCharacter.y) {
-					// parquet and character
+					// parquet and character (left and right view)
 					ctx.drawImage(tiles[0], y * tileSize, x * tileSize);
 					if (randomCharacter.moves === 'right') {
 						ctx.drawImage(randomCharacter.tile[1], y * tileSize, x * tileSize);
@@ -82,30 +81,25 @@ function render(randomCharacter) {
 }
 
 function moveCharacter(randomCharacter, direction) {
-	var maxY = level[0].length - 1;
-	var maxX = level.length - 1;
-	var currentY = randomCharacter.y;
-	var currentX = randomCharacter.x;
-	
 	switch (direction) {
 		case 'up':
-			if (level[currentX - 1][currentY] === 0) {
+			if (level[randomCharacter.x - 1][randomCharacter.y] === 0) {
 				randomCharacter.x--;
 			}
 			break;
 		case 'down':
-			if (level[currentX + 1][currentY] === 0) {
+			if (level[randomCharacter.x + 1][randomCharacter.y] === 0) {
 				randomCharacter.x++;
 			}
 			break;
 		case 'left':
-			if (level[currentX][currentY - 1] === 0) {
+			if (level[randomCharacter.x][randomCharacter.y - 1] === 0) {
 				randomCharacter.y--;
 				randomCharacter.moves = 'left';
 			}
 			break;
 		case 'right':
-			if (level[currentX][currentY + 1] === 0) {
+			if (level[randomCharacter.x][randomCharacter.y + 1] === 0) {
 				randomCharacter.y++;
 				randomCharacter.moves = 'right';
 			}
